@@ -90,11 +90,19 @@ var MapController = (function () {
 */
 var UIController = (function () {
 
+
     /*
     --------------------- Return part ---------------------
     */
     return {
-
+        selectFiles: function (evt) {
+            var element = evt.target;
+            files = [];
+            for (var i = 0; i < element.files.length; i++) {
+                files.push(element.files[i]);
+            }
+            return files;
+        },
     }
 
 })();
@@ -112,6 +120,27 @@ var dataController = (function () {
     --------------------- Return part ---------------------
     */
     return {
+        parseFiles: function (files, callBackShowOnMap) {
+            var gpxFiles;
+            // 1. filter only gpx files 
+            gpxFiles = filterGpxFiles(files);
+
+            if (gpxFiles.length > 0) {
+
+                // Checks whether the browser supports HTML5  
+                if (typeof (FileReader) != "undefined") {
+                    // 5. read GPX files as XML
+                    for (var i = 0; i < gpxFiles.length; i++) {
+                        // callback function  callBackShowOnMap is 
+                        // send
+                        readGpxFiles(files[i], callBackShowOnMap);
+                    }
+                } else {
+                    alert("Sorry! Your browser does not support HTML5!");
+                }
+            }
+            return gpxFiles.length;
+        },
 
     }
 
@@ -127,15 +156,29 @@ var dataController = (function () {
 var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
 
     /*
+    Prepare listeners for drag and drop
+    */
+    var setupEventListeners = function () {
+        // Setup the listeners.
+        document.getElementById('gpxFile').addEventListener("change", buttonFilesClick, false);
+    };
+
+    var buttonFilesClick = function (evt) {
+        UICtrl.selectFiles(evt);
+        if (dataCtrl.parseFiles(files, showOnMap) === 0) {
+            console.log('No gpx file selected...');
+            // UICtrl.showDragError('No gpx file selected...');
+        }
+    };
+    /*
     --------------------- Return part ---------------------
     */
     return {
 
         init: function (google) {
-
+            setupEventListeners();
             // init google map and position
             mapCtrl.init(google);
-
         }
     }
 
