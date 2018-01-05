@@ -1,1 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    background-color: darkgray;
+    color: #555;
+    font-family: 'Open Sans', serif;
+    font-size: 16px;
+    position: relative;
+    font-weight: 400;
+}
+
+.title {
+    font-size: 40px;
+    font-weight: 400;
+    padding: 0;
+    position: absolute;
+
+    top: 0;
+    left: 200px;
+    right: 200px;
+    z-index: 3;
+    background-color: white;
+    text-align: center;
+}
+
+.section {
+    line-height: 20px;
+    padding-bottom: 13px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 13px;
+    font-size: 24px;
+    text-align: center;
+    background-color: white;
+    height: auto;
+}
+
+
+#sidebar {
+    margin: 30px;
+    position: absolute;
+    left: 0;
+    top: 60px;
+    width: 300px;
+    background-color: transparent;
+    z-index: 1000;
+
+}
+
+#map {
+    width: 50%;
+    height: 50%;
+}
+
+#mapholder {
+    overflow: hidden;
+    background-color: white;
+}
