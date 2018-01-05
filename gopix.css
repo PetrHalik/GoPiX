@@ -4,22 +4,13 @@
     box-sizing: border-box;
 }
 
-body {
-    background-color: darkgray;
-    color: #555;
-    font-family: 'Open Sans', serif;
-    font-size: 16px;
-    position: relative;
-    font-weight: 400;
-}
-
 .title {
     font-size: 40px;
     font-weight: 400;
     padding: 0;
     position: absolute;
 
-    top: 0;
+    top: 0px;
     left: 200px;
     right: 200px;
     z-index: 3;
@@ -39,6 +30,28 @@ body {
     height: auto;
 }
 
+.btn-orange {
+    border-color: #f94d11;
+    background-color: #f94d11;
+    color: #FFF;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    width: 260px;
+}
+
+body {
+    background-color: darkgray;
+    color: #555;
+    font-family: Open Sans;
+    font-size: 16px;
+    position: relative;
+    font-weight: 400;
+}
 
 #sidebar {
     margin: 30px;
@@ -51,6 +64,46 @@ body {
 
 }
 
+#drop_zone {
+    border: 2px dashed #bbb;
+    border-radius: 10px;
+    text-align: center;
+    font: 21pt bold;
+    color: #bbb;
+    width: 230px;
+    height: 30px;
+    font-size: 20px;
+}
+
+.area {
+
+    padding: 15px;
+    border: 1px solid #333;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+#orDiv {
+    text-align: center;
+    padding: 10px 0px;
+    font-size: 19px;
+
+}
+
+#selectDiv {
+    text-align: center;
+    padding: 0px;
+    font-size: 17px;
+}
+
+#urlInput {
+    width: 260px;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    margin-top: 10px;
+}
+
 #map {
     width: 50%;
     height: 50%;
@@ -59,4 +112,29 @@ body {
 #mapholder {
     overflow: hidden;
     background-color: white;
+}
+
+#chart_div {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 2;
+}
+
+#divDistance {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 4;
+    width: 512;
+    text-align: center;
+}
+
+#gpxFile {
+    visibility: hidden;
+    margin-top: -20px;
+}
+
+#urlDiv {
+    margin-top: 15px;
 }

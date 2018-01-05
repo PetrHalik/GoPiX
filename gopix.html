@@ -21,16 +21,39 @@
 
 <body>
     <div class="title">G o P i X</div>
-
     <div id="sidebar">
+
         <div class="section">
             <div>Upload a GPX file</div>
         </div>
+        <div id="sidebarContent" class="section">
+
+            <div id="gpxDiv">
+                <button class="btn btn-orange" id="gpxButton" type="submit">Upload GPX File</button>
+                <input type="file" name="gpxFile" id="gpxFile" multiple>
+            </div>
+
+            <div id="orDiv">
+                or
+            </div>
+            <div class="area" id="drag_area">
+                <div id="drop_zone">Drop files here</div>
+            </div>
+            <div id="urlDiv">
+                <button class="btn btn-orange" id="clear" type="submit">Clear all Tracks</button>
+            </div>
+        </div>
+
     </div>
 
     <div id="mapholder">
         <div id="map"></div>
+
+        <div id="chart_div"></div>
+        <div id="divDistance">Distance: <span id="distance"></span></div>
     </div>
+
+
 </body>
 
 </html>
