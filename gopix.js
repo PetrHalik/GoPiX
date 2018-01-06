@@ -128,6 +128,42 @@ var UIController = (function () {
 */
 var dataController = (function () {
 
+    var data = {
+        gpxs: []
+    }
+
+    // Gpx file can contain more tracks and routes
+    var Gpx = function (id, name, filename) {
+        this.id = id;
+        this.name = name;
+        this.filename = filename;
+        this.tracks = new Array();
+    };
+
+    Gpx.prototype.addTrack = function (track) {
+        this.tracks.push(track);
+    };
+
+
+    // track with points
+    var Track = function (id, name, color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.points = new Array();
+        this.latlngArray = [];
+    };
+
+    // point with latitude and longitude
+    var Point = function (lat, long) {
+        this.lat = lat;
+        this.long = long;
+    };
+
+    Track.prototype.addPoint = function (point) {
+        this.points.push(point);
+    };
+
     var filterGpxFiles = function (files) {
         var gpxFiles = [];
         for (var i = 0; i < files.length; i++) {
