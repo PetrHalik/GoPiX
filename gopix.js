@@ -103,6 +103,18 @@ var UIController = (function () {
             }
             return files;
         },
+
+        showDragError: function (message) {
+            var element;
+            element = document.getElementById('drop_zone_error');
+            element.innerHTML = message;
+            // Add the "show" class to DIV
+            element.className = "show";
+
+            setTimeout(function () {
+                element.className = element.className.replace("show", "");
+            }, 3000);
+        },
     }
 
 })();
@@ -173,7 +185,7 @@ var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
         var selectedFiles = UICtrl.selectFiles(evt);
         if (dataCtrl.parseFiles(selectedFiles) === 0) {
             console.log('No gpx file selected...');
-            // UICtrl.showDragError('No gpx file selected...');
+            UICtrl.showDragError('No gpx file selected...');
         }
     };
 
