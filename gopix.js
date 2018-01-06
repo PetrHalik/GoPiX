@@ -137,6 +137,24 @@ var dataController = (function () {
         }
         return gpxFiles;
     };
+
+    var readGpxFiles = function (file) {
+        var reader;
+
+        reader = new FileReader();
+        reader.readAsText(file);
+        // callback function is called when the file is readed
+        reader.onloadend = function () {
+            var xmlData, tracks, track, name;
+            xmlData = $(reader.result);
+            name = $(xmlData).find("metadata").find('name').text();
+            if (!name) {
+                name = file.name;
+            }
+            console.log(xmlData);
+        };
+    };
+
     /*
     --------------------- Return part ---------------------
     */
@@ -151,7 +169,7 @@ var dataController = (function () {
                 if (typeof (FileReader) != "undefined") {
                     // read GPX files as XML
                     for (var i = 0; i < gpxFiles.length; i++) {
-                        console.log('readGpxFiles');
+                        readGpxFiles(files[i]);
                     }
                 } else {
                     alert("Sorry! Your browser does not support HTML5!");
