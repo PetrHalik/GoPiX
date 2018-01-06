@@ -116,24 +116,30 @@ var UIController = (function () {
 */
 var dataController = (function () {
 
+    var filterGpxFiles = function (files) {
+        var gpxFiles = [];
+        for (var i = 0; i < files.length; i++) {
+            if (files[i].name.split('.').pop().toLowerCase() === 'gpx') {
+                gpxFiles.push(files[i]);
+            }
+        }
+        return gpxFiles;
+    };
     /*
     --------------------- Return part ---------------------
     */
     return {
-        parseFiles: function (files, callBackShowOnMap) {
+        parseFiles: function (files) {
             var gpxFiles;
             // 1. filter only gpx files 
             gpxFiles = filterGpxFiles(files);
 
             if (gpxFiles.length > 0) {
-
                 // Checks whether the browser supports HTML5  
                 if (typeof (FileReader) != "undefined") {
-                    // 5. read GPX files as XML
+                    // read GPX files as XML
                     for (var i = 0; i < gpxFiles.length; i++) {
-                        // callback function  callBackShowOnMap is 
-                        // send
-                        readGpxFiles(files[i], callBackShowOnMap);
+                        console.log('readGpxFiles');
                     }
                 } else {
                     alert("Sorry! Your browser does not support HTML5!");
@@ -164,12 +170,14 @@ var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
     };
 
     var buttonFilesClick = function (evt) {
-        UICtrl.selectFiles(evt);
-        if (dataCtrl.parseFiles(files, showOnMap) === 0) {
+        var selectedFiles = UICtrl.selectFiles(evt);
+        if (dataCtrl.parseFiles(selectedFiles) === 0) {
             console.log('No gpx file selected...');
             // UICtrl.showDragError('No gpx file selected...');
         }
     };
+
+
     /*
     --------------------- Return part ---------------------
     */
