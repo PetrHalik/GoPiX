@@ -140,6 +140,7 @@ var dataController = (function () {
         this.tracks = new Array();
     };
 
+    // gpx file
     Gpx.prototype.addTrack = function (track) {
         this.tracks.push(track);
     };
@@ -174,6 +175,41 @@ var dataController = (function () {
         return gpxFiles;
     };
 
+    var getTrackCount = function () {
+        var counter = 0;
+        for (var i = 0; i < data.gpxs.length; i++) {
+            counter += data.gpxs[i].tracks.length;
+        }
+        return counter;
+    };
+
+    var readTrack = function (xmlTrack, gpx) {
+        var name, id, color, track, xmlPoints;
+
+        name = $(xmlTrack).find("name").text();
+        id = getTrackCount();
+        if (!name) {
+            name = 'track' + (id + 1);
+        }
+
+        // track color from gsx file
+        color = $(xmlTrack).find("color").text();
+        track = new Track(id, name, color);
+
+        var xmlPoints = $(xmlTrack).find("trkpt");
+        for (var i = 0; i < xmlPoints.length; i++) {
+            // have to be wrapped by $() to use attr fuction of jquery
+            var lat = $(xmlPoints[i]).attr('lat');
+            var lon = $(xmlPoints[i]).attr('lon');
+            point = new Point(lat, lon);
+            track.addPoint(point);
+        }
+        // register tracks if there are some points
+        if (track.points.length > 0) {
+            gpx.addTrack(track);
+        }
+    };
+
     var readGpxFiles = function (file) {
         var reader;
 
@@ -187,7 +223,13 @@ var dataController = (function () {
             if (!name) {
                 name = file.name;
             }
-            console.log(xmlData);
+            gpx = new Gpx(data.gpxs.length + 1, name, file.name);
+            data.gpxs.push(gpx);
+
+            tracks = $(xmlData).find("trk");
+            for (var i = 0; i < tracks.length; i++) {
+                readTrack(tracks[i], gpx);
+            }
         };
     };
 
@@ -211,6 +253,7 @@ var dataController = (function () {
                     alert("Sorry! Your browser does not support HTML5!");
                 }
             }
+            console.log(data);
             return gpxFiles.length;
         },
 
@@ -238,7 +281,6 @@ var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
     var buttonFilesClick = function (evt) {
         var selectedFiles = UICtrl.selectFiles(evt);
         if (dataCtrl.parseFiles(selectedFiles) === 0) {
-            console.log('No gpx file selected...');
             UICtrl.showDragError('No gpx file selected...');
         }
     };
