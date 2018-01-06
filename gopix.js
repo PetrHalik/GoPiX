@@ -60,6 +60,10 @@ var MapController = (function () {
         }
     };
 
+    var showTrack = function (track, data) {
+        console.log(track);
+    };
+
     /*
     --------------------- Return part ---------------------
     */
@@ -79,6 +83,15 @@ var MapController = (function () {
             // find position
             findPosition();
         },
+
+        showOnMap: function (tracks, data) {
+            console.log(tracks.length);
+            for (var i = 0; i < tracks.length; i++) {
+                showTrack(tracks[i], data);
+            }
+        },
+
+
     }
 
 })();
@@ -210,7 +223,7 @@ var dataController = (function () {
         }
     };
 
-    var readGpxFiles = function (file) {
+    var readGpxFiles = function (file, callBackShowOnMap) {
         var reader;
 
         reader = new FileReader();
@@ -230,6 +243,7 @@ var dataController = (function () {
             for (var i = 0; i < tracks.length; i++) {
                 readTrack(tracks[i], gpx);
             }
+            callBackShowOnMap(gpx.tracks, data);
         };
     };
 
@@ -237,7 +251,7 @@ var dataController = (function () {
     --------------------- Return part ---------------------
     */
     return {
-        parseFiles: function (files) {
+        parseFiles: function (files, callBackShowOnMap) {
             var gpxFiles;
             // 1. filter only gpx files 
             gpxFiles = filterGpxFiles(files);
@@ -247,7 +261,7 @@ var dataController = (function () {
                 if (typeof (FileReader) != "undefined") {
                     // read GPX files as XML
                     for (var i = 0; i < gpxFiles.length; i++) {
-                        readGpxFiles(files[i]);
+                        readGpxFiles(files[i], callBackShowOnMap);
                     }
                 } else {
                     alert("Sorry! Your browser does not support HTML5!");
@@ -255,6 +269,10 @@ var dataController = (function () {
             }
             console.log(data);
             return gpxFiles.length;
+        },
+
+        getData: function () {
+            return data;
         },
 
     }
@@ -280,12 +298,18 @@ var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
 
     var buttonFilesClick = function (evt) {
         var selectedFiles = UICtrl.selectFiles(evt);
-        if (dataCtrl.parseFiles(selectedFiles) === 0) {
+        if (dataCtrl.parseFiles(files, showOnMap) === 0) {
             UICtrl.showDragError('No gpx file selected...');
         }
     };
 
-
+    var showOnMap = function (tracks, data) {
+        if (tracks.length > 0) {
+            mapCtrl.showOnMap(tracks, data);
+        } else {
+            UICtrl.showDragError("No track found in gpx...");
+        }
+    };
     /*
     --------------------- Return part ---------------------
     */
