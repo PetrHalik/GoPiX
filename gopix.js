@@ -12,14 +12,16 @@ var MapController = (function () {
         DEFAULT_ZOOM: 15,
         DEFAULT_MAP_TYPE: 'terrain',
         MIN_TRACK_POINT_DELTA: 0.0001,
+        SAMPLES: 512,
+        STROKE_COLOR_DEFAULT: '#FF0000',
+        STROKE_COLOR_SELECTED: '#000000'
     }
 
     // variables
 
-    var map = null;
+    var map, chart, elevationService;
     var currentLatitude = MapConstants.DEFAULT_LATITUDE;
     var currentLongitude = MapConstants.DEFAULT_LONGITUDE;
-
 
     /*
         center map
@@ -61,6 +63,70 @@ var MapController = (function () {
         }
     };
 
+    /*
+    show elevation chart for first track. Callback method is  plotElevation
+    */
+    function showElevation(track) {
+        // elevation is already ploted
+        if (!track || track.isPloted) {
+            return;
+        }
+        track.isPloted = true;
+        // track with elevation should be black
+        track.polyline.setOptions({
+            strokeColor: MapConstants.STROKE_COLOR_SELECTED,
+        });
+        document.getElementById("divDistance").style.display = 'block';
+        document.getElementById("distance").innerHTML = (track.polyline.Distance() / 1000).toFixed(2) + " km";
+        // It seems there is a limit for points.
+        // better solution would be to delete nearest points
+        newPath = [];
+        for (var i = 0; i < track.latlngArray.length; i++) {
+            if (i < 1840) {
+                newPath.push(track.latlngArray[i]);
+            }
+        }
+
+        elevationService.getElevationAlongPath({
+            path: newPath,
+            samples: MapConstants.SAMPLES
+        }, plotElevation);
+    };
+
+    // Takes an array of ElevationResult objects, draws the path on the map
+    // and plots the elevation profile on a GViz ColumnChart
+    function plotElevation(results) {
+        var polyline;
+
+        if (results === null) {
+            return;
+        }
+        elevations = results;
+
+        var path = [];
+        for (var i = 0; i < results.length; i++) {
+            path.push(elevations[i].location);
+        }
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Sample');
+        data.addColumn('number', 'Elevation');
+        for (var i = 0; i < results.length; i++) {
+            data.addRow(['', elevations[i].elevation]);
+        }
+
+        document.getElementById('chart_div').style.display = 'block';
+        chart.draw(data, {
+            width: 512,
+            height: 200,
+            legend: 'none',
+            titleY: 'Elevation (m)',
+            focusBorderColor: '#00ff00'
+        });
+
+
+    };
+
     var showTrack = function (track, data) {
         var pointarray = [];
         // process first point
@@ -91,6 +157,8 @@ var MapController = (function () {
             strokeWeight: 2
         });
         path.setMap(map);
+        track.latlngArray = pointarray;
+        track.polyline = path;
     };
 
     var centerAndZoomMap = function (data) {
@@ -123,6 +191,8 @@ var MapController = (function () {
 
             var mapElement, mapOptions;
 
+            chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            elevationService = new google.maps.ElevationService();
             // create map
             mapOptions = {
                 zoom: MapConstants.DEFAULT_ZOOM,
@@ -139,6 +209,9 @@ var MapController = (function () {
             centerAndZoomMap(data);
             for (var i = 0; i < tracks.length; i++) {
                 showTrack(tracks[i], data);
+            }
+            if (data.gpxs.length > 0 && data.gpxs[0].tracks.length > 0) {
+                showElevation(data.gpxs[0].tracks[0]);
             }
         },
 
@@ -179,6 +252,11 @@ var UIController = (function () {
                 element.className = element.className.replace("show", "");
             }, 3000);
         },
+
+        init: function () {
+            document.getElementById("divDistance").style.display = 'none';
+            document.getElementById("chart_div").style.display = 'none';
+        }
     }
 
 })();
@@ -221,6 +299,8 @@ var dataController = (function () {
         this.color = color;
         this.points = new Array();
         this.latlngArray = [];
+        this.polyline = null;
+        this.isPloted = false;
     };
 
     // point with latitude and longitude
