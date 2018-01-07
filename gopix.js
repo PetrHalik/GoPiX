@@ -34,6 +34,8 @@ var MapController = (function () {
             mousemarker = null;
         }
     }
+
+
     /*
         center map
       */
@@ -151,6 +153,17 @@ var MapController = (function () {
 
     };
 
+    var unselectTracks = function (data, color) {
+        for (var i = 0; i < data.gpxs.length; i++) {
+            for (var j = 0; j < data.gpxs[i].tracks.length; j++) {
+                data.gpxs[i].tracks[j].polyline.setOptions({
+                    strokeColor: color,
+                });
+                data.gpxs[i].tracks[j].isPloted = false;
+            }
+        }
+    }
+
     var showTrack = function (track, data) {
         var pointarray = [];
         // process first point
@@ -183,6 +196,14 @@ var MapController = (function () {
         path.setMap(map);
         track.latlngArray = pointarray;
         track.polyline = path;
+        // click track on the map - color all tracks as default
+        // and color clicked track as selected
+        google.maps.event.addListener(track.polyline, 'click', function () {
+            unselectTracks(data, MapConstants.STROKE_COLOR_DEFAULT);
+            track.polyline.setMap(null);
+            track.polyline.setMap(map);
+            showElevation(track);
+        });
     };
 
     var centerAndZoomMap = function (data) {
