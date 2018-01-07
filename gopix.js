@@ -26,6 +26,7 @@ var MapController = (function () {
     var mousemarker = null;
 
 
+
     // Remove the green rollover marker when the mouse leaves the chart
     function clearMouseMarker() {
         if (mousemarker != null) {
@@ -239,6 +240,19 @@ var MapController = (function () {
             }
         },
 
+        /* 
+    
+        */
+        clearMap: function (data) {
+            for (var i = 0; i < data.gpxs.length; i++) {
+                for (var j = 0; j < data.gpxs[i].tracks.length; j++) {
+                    data.gpxs[i].tracks[j].polyline.setMap(null);
+                }
+            }
+            document.getElementById("divDistance").style.display = 'none';
+            document.getElementById('chart_div').style.display = 'none';
+            data.gpxs = [];
+        }
 
     }
 
@@ -492,6 +506,7 @@ var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
     var setupEventListeners = function () {
         // Setup the listeners.
         document.getElementById('gpxFile').addEventListener("change", buttonFilesClick, false);
+        document.getElementById('clear').addEventListener("click", clearTracks, false);
     };
 
     var buttonFilesClick = function (evt) {
@@ -507,6 +522,12 @@ var mainController = (function (dataCtrl, UICtrl, mapCtrl) {
         } else {
             UICtrl.showDragError("No track found in gpx...");
         }
+    };
+    /*
+   handle  click clear tracks 
+    */
+    var clearTracks = function (evt) {
+        mapCtrl.clearMap(dataCtrl.getData());
     };
     /*
     --------------------- Return part ---------------------
