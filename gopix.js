@@ -11,6 +11,7 @@ var MapController = (function () {
         DEFAULT_LONGITUDE: 14.441196,
         DEFAULT_ZOOM: 15,
         DEFAULT_MAP_TYPE: 'terrain',
+        MIN_TRACK_POINT_DELTA: 0.0001,
     }
 
     // variables
@@ -61,7 +62,35 @@ var MapController = (function () {
     };
 
     var showTrack = function (track, data) {
-        console.log(track);
+        var pointarray = [];
+        // process first point
+        var lastlat = parseFloat(track.points[0].lat);
+        var lastlon = parseFloat(track.points[0].long);
+        var latlng = new google.maps.LatLng(lastlat, lastlon);
+        pointarray.push(latlng);
+        for (var i = 1; i < track.points.length; i++) {
+            var lat = parseFloat(track.points[i].lat);
+            var lon = parseFloat(track.points[i].long);
+            // Verify that this is far enough away from the last point to be used.
+            var latdiff = lat - lastlat;
+            var londiff = lon - lastlon;
+            if (Math.sqrt(latdiff * latdiff + londiff * londiff) >
+                MapConstants.MIN_TRACK_POINT_DELTA) {
+                lastlon = lon;
+                lastlat = lat;
+                latlng = new google.maps.LatLng(lat, lon);
+                pointarray.push(latlng);
+            }
+        }
+
+        var path = new google.maps.Polyline({
+            path: pointarray,
+            geodesic: true,
+            strokeColor: MapConstants.STROKE_COLOR_DEFAULT,
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        });
+        path.setMap(map);
     };
 
     /*
@@ -85,7 +114,6 @@ var MapController = (function () {
         },
 
         showOnMap: function (tracks, data) {
-            console.log(tracks.length);
             for (var i = 0; i < tracks.length; i++) {
                 showTrack(tracks[i], data);
             }
@@ -267,7 +295,6 @@ var dataController = (function () {
                     alert("Sorry! Your browser does not support HTML5!");
                 }
             }
-            console.log(data);
             return gpxFiles.length;
         },
 
